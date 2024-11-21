@@ -3,13 +3,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -21,6 +24,8 @@ public class Layout implements ActionListener {
     private JLabel statusLabel;
     private JLabel statusLabel1;
     private JLabel statusLabel2;
+    private JLabel imageLabel;
+    private JPanel imagePanel;
     private JTextArea ta; // Text area in the middle
     private static JTextArea ta1;
     private JTextArea ta2;
@@ -41,12 +46,20 @@ public class Layout implements ActionListener {
     public static void main(String[] args) {
         Layout Layout = new Layout();
         Layout.showEventDemo();
+        try {
+            Layout.addImage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void prepareGUI() {
         mainFrame = new JFrame("Charity");
         mainFrame.setSize(WIDTH, HEIGHT);
         mainFrame.setLayout(new BorderLayout());
+
+        imagePanel = new JPanel();
 
         //menu at top
         cut = new JMenuItem("cut");
@@ -163,6 +176,66 @@ public class Layout implements ActionListener {
         if (e.getSource() == selectAll)
             ta.selectAll();
 
+    }
+
+    private void addImage() throws IOException {
+        try {
+
+
+
+          BufferedImage ErrorImage = ImageIO.read(new File("cause.jpg"));
+            BufferedImage inputImageBuff = ImageIO.read(new File("cause.jpg"));
+
+
+            ImageIcon inputImage;
+            if (inputImageBuff != null) {
+                inputImage = new ImageIcon(inputImageBuff.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+                // = new JLabel();
+                if (inputImage != null) {
+                    imageLabel = new JLabel(inputImage);
+                } else {
+                    imageLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
+
+                }
+                imagePanel.removeAll();
+                imagePanel.repaint();
+
+                imagePanel.add(imageLabel);
+                mainFrame.add(imagePanel, BorderLayout.NORTH);
+
+            }
+            else{
+                imageLabel =new JLabel(new ImageIcon(ErrorImage.getScaledInstance(800, 589, Image.SCALE_SMOOTH)));
+
+            }
+
+        } catch (IOException e) {
+            System.out.println(e);
+            System.out.println("sadness");
+            BufferedImage ErrorImage = ImageIO.read(new File("Error.png"));
+            JLabel imageLabel = new JLabel(new ImageIcon(ErrorImage.getScaledInstance(800, 589, Image.SCALE_SMOOTH)));
+
+            imagePanel.removeAll();
+            imagePanel.repaint();
+            imagePanel.add(imageLabel);
+            mainFrame.add(imagePanel);
+
+        }
+
+//        JButton submitButton = new JButton("Submit");
+//        JButton cancelButton = new JButton("Cancel");
+//
+//        submitButton.setActionCommand("Submit");
+//        cancelButton.setActionCommand("Cancel");
+//
+//        submitButton.addActionListener(new ButtonClickListener());
+//        cancelButton.addActionListener(new ButtonClickListener());
+//
+//        controlPanel.add(okButton, BorderLayout.EAST);
+//        controlPanel.add(submitButton, BorderLayout.CENTER);
+//        controlPanel.add(cancelButton, BorderLayout.WEST);
+
+        mainFrame.setVisible(true);
     }
 
     public void pull() throws ParseException {
